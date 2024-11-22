@@ -7,10 +7,10 @@ terraform {
   }
 
   backend "remote" {
-    organization = "Trinity-Oracle"
+    organization = "Trinity_Oracle"
 
     workspaces {
-      name = "cloudcore"
+      name = "s3-uploader"
     }
   }
   required_version = ">= 1.6.3"
