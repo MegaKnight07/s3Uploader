@@ -7,7 +7,7 @@ terraform {
   }
 
   backend "remote" {
-    organization = "cloudcore-org"
+    organization = "Trinity-Oracle"
 
     workspaces {
       name = "cloudcore"
