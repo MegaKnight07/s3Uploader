@@ -3,9 +3,13 @@ name: 'Terraform'
 
 on:
   push:
-    branches: ["master"]
+    branches:
+      - "master"
+      - "dev"   # Added dev branch to trigger on push to dev
   pull_request:
-    branches: ["master"]
+    branches:
+      - "master"
+      - "dev"   # Added dev branch to trigger on PR to dev
 
 permissions:
   contents: read
