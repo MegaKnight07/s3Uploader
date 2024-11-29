@@ -1,3 +1,4 @@
+---
 name: 'Terraform'
 
 on:
@@ -21,43 +22,41 @@ jobs:
         working-directory: ./terraform
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    # Add a step to package the Lambda function
-    - name: Package Lambda Function
-      run: |
-        cd ../lambda
-        zip -r9 lambda_function_payload.zip lambda_function.py
-        mv lambda_function_payload.zip ../terraform/
-        cd ../terraform
+      # Add a step to package the Lambda function
+      - name: Package Lambda Function
+        run: |
+          cd ../lambda
+          zip -r9 lambda_function_payload.zip lambda_function.py
+          mv lambda_function_payload.zip ../terraform/
+          cd ../terraform
 
-    # Setup AWS credentials from GitHub Secrets
-    - name: Setup AWS credentials
-      run: |
-        echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
-        echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
-        echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> $GITHUB_ENV
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v3
-      with:
-        cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+      - name: Terraform Init
+        run: terraform init
 
-    - name: Terraform Init
-      run: terraform init
+      - name: Terraform Format
+        run: terraform fmt -check
+        continue-on-error: true
 
-    - name: Terraform Format
-      run: terraform fmt -check
-      continue-on-error: true
+      - name: Terraform Validate
+        run: terraform validate
 
-    - name: Terraform Validate
-      run: terraform validate
+      - name: Terraform Plan
+        run: terraform plan -no-color -input=false
+        continue-on-error: true
 
-    - name: Terraform Plan
-      run: terraform plan -no-color -input=false
-      continue-on-error: true
 
-    - name: Terraform Apply
-      if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-      run: terraform apply -auto-approve -input=false
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
+        run: terraform apply -auto-approve -input=false
+
+      - name: Debug TF_API_TOKEN
+        run: echo "TF_API_TOKEN is set" && echo ${{ secrets.TF_API_TOKEN }}
+

@@ -2,7 +2,7 @@ import boto3
 
 def lambda_handler(event, context):
     s3_resource = boto3.resource('s3')
-    output_bucket_name = 'cloudcore-s3-file-out'
+    output_bucket_name = 'trinity-s3-file-out'
 
     # Define supported file extensions and their corresponding output paths
     supported_extensions = {

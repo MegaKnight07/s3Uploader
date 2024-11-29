@@ -17,8 +17,5 @@ terraform {
 }
 
 provider "aws" {
-  region     = var.region     # Automatically picked from environment variable AWS_REGION
-  
+  region     = var.region     # Automatically picked from environment variable AWS_REGION\
 }
-
-
