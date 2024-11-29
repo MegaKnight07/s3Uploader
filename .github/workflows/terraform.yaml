@@ -1,10 +1,10 @@
 name: 'Terraform'
 
 on:
-  # push:
-  #   branches: [ "master" ]  
   pull_request:
-    branches: [ "master" ]  
+    branches: [ "master" ]
+  push:
+    branches: [ "dev" ]  # Trigger on push to dev branch
 
 permissions:
   contents: read
@@ -32,6 +32,13 @@ jobs:
         mv lambda_function_payload.zip ../terraform/
         cd ../terraform
 
+    # Setup AWS credentials from GitHub Secrets
+    - name: Setup AWS credentials
+      run: |
+        echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
+        echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
+        echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> $GITHUB_ENV
+
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
       with:
@@ -49,8 +56,8 @@ jobs:
 
     - name: Terraform Plan
       run: terraform plan -no-color -input=false
-      continue-on-error: true 
+      continue-on-error: true
 
     - name: Terraform Apply
       if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-      run: terraform apply -auto-approve -input=false 
+      run: terraform apply -auto-approve -input=false

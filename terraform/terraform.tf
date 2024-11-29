@@ -7,15 +7,18 @@ terraform {
   }
 
   backend "remote" {
-    organization = "cloudcore-org"
+    organization = "Trinity_Oracle"
 
     workspaces {
-      name = "cloudcore"
+      name = "s3-uploader"
     }
   }
   required_version = ">= 1.6.3"
 }
 
 provider "aws" {
-  region = var.region
+  region     = var.region     # Automatically picked from environment variable AWS_REGION
+  
 }
+
+
